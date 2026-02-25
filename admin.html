@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin - Gestion des Commandes</title>
+    <style>
+        body { font-family: Arial, sans-serif; background: #2c3e50; color: white; padding: 20px; }
+        .container { max-width: 800px; margin: auto; }
+        .order-card { 
+            background: white; color: #333; padding: 15px; 
+            border-radius: 10px; margin-bottom: 15px; 
+            box-shadow: 0 4px 6px rgba(0,0,0,0.3);
+        }
+        .order-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #eee; padding-bottom: 10px; }
+        .status-badge { padding: 5px 10px; border-radius: 5px; font-weight: bold; background: #e67e22; color: white; }
+        .items-list { margin: 10px 0; font-size: 0.9em; }
+        select { width: 100%; padding: 10px; margin-top: 10px; border-radius: 5px; cursor: pointer; }
+        .btn-delete { background: #e74c3c; color: white; border: none; padding: 8px; border-radius: 5px; margin-top: 10px; cursor: pointer; }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <div style="text-align: center; margin-bottom: 20px;">
+            <img src="logo.png" alt="Logo" style="width: 80px; height: 80px; border-radius: 50%;">
+            <h1>👨‍🍳 Tableau de Bord Pouletia</h1>
+        </div>
+        
+        <button onclick="logoutAdmin()" style="background: #95a5a6; color: white; border: none; padding: 5px 10px; border-radius: 5px; cursor: pointer; margin-bottom: 20px;">
+            Déconnexion
+        </button>
+        </div>
+        <p>Gérez les statuts de livraison en temps réel.</p>
+        <div id="orders-container">Chargement des commandes...</div>
+    </div>
+
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database-compat.js"></script>
+
+    <script>
+        // Utilisation de la configuration identique à index.html
+        const firebaseConfig = {
+            apiKey: "AIzaSyBNPJ6ndCdvbjmrCCFx9_zba8hPkypGCRI",
+            authDomain: "monrestaurant-2bf8b.firebaseapp.com",
+            databaseURL: "https://monrestaurant-2bf8b-default-rtdb.europe-west1.firebasedatabase.app/",
+            projectId: "monrestaurant-2bf8b",
+            storageBucket: "monrestaurant-2bf8b.firebasestorage.app",
+            messagingSenderId: "995575208643",
+            appId: "1:995575208643:web:ad70d316e75ee450276076"
+        };
+
+        firebase.initializeApp(firebaseConfig);
+        const database = firebase.database();
+
+        // Écouter les commandes en temps réel
+        database.ref('orders').on('value', (snapshot) => {
+            const container = document.getElementById('orders-container');
+            container.innerHTML = "";
+            const data = snapshot.val();
+
+            if (!data) {
+                container.innerHTML = "<p>Aucune commande pour le moment.</p>";
+                return;
+            }
+
+            // Affichage des commandes (les plus récentes en premier)
+            Object.keys(data).reverse().forEach(id => {
+                const order = data[id];
+                const card = document.createElement('div');
+                card.className = 'order-card';
+                
+                card.innerHTML = `
+                    <div class="order-header">
+                        <strong>Code: ${id}</strong>
+                        <span class="status-badge">${order.status}</span>
+                    </div>
+                    <div class="items-list">
+                        <small>${order.date}</small><br>
+                        <strong>Total: ${order.total} KMF</strong>
+                    </div>
+                    <select onchange="updateStatus('${id}', this.value)">
+                        <option value="">Modifier le statut...</option>
+                        <option value="🍳 En préparation">🍳 En préparation</option>
+                        <option value="🛵 En cours de livraison">🛵 En cours de livraison</option>
+                        <option value="✅ Commande livrée">✅ Commande livrée</option>
+                    </select>
+                    <button class="btn-delete" onclick="deleteOrder('${id}')">Supprimer l'archive</button>
+                `;
+                container.appendChild(card);
+            });
+        });
+
+        // Fonction pour mettre à jour le statut
+        function updateStatus(id, newStatus) {
+            if(!newStatus) return;
+            database.ref('orders/' + id).update({
+                status: newStatus
+            });
+        }
+
+        // Fonction pour supprimer une commande terminée
+        function deleteOrder(id) {
+            if(confirm("Supprimer cette commande de l'historique ?")) {
+                database.ref('orders/' + id).remove();
+            }
+        }
+
+        // 1. Définir le mot de passe
+        const ADMIN_PASSWORD = "Raouf2014"; 
+
+        // 2. Vérifier l'accès immédiatement
+        function checkAccess() {
+            const access = localStorage.getItem("admin_access");
+            
+            if (access !== "true") {
+                const password = prompt("Veuillez entrer le mot de passe administrateur :");
+                
+                if (password === ADMIN_PASSWORD) {
+                    localStorage.setItem("admin_access", "true");
+                    alert("Accès accordé !");
+                } else {
+                    alert("Mot de passe incorrect.");
+                    window.location.href = "index.html"; // Redirige vers la page d'accueil
+                }
+            }
+        }
+        function logoutAdmin() {
+            localStorage.removeItem("admin_access");
+            window.location.reload(); // Recharge la page pour redemander le mot de passe
+        }
+
+        // Lancer la vérification
+        checkAccess();
+    </script>
+</body>
+</html>

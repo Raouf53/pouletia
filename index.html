@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mon Restaurant Comores</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <header class="hero">
+        <img src="logo.png" alt="Logo Pouletia" style="width: 100px; height: 100px; border-radius: 50%; margin-bottom: 10px; border: 3px solid white;">
+        
+        <h1 id="welcome-text">Bienvenue</h1>
+        <p>Prêt pour une commande rapide ?</p>
+    </header>
+
+    <section class="tracking-container">
+        <div class="tracking-card">
+            <h3>🔍 Suivre ma commande</h3>
+            <div class="search-bar">
+                <input type="text" id="orderCode" placeholder="Ex: #269">
+                <button onclick="checkStatus()">Vérifier</button>
+            </div>
+            <p id="statusResult"></p>
+        </div>
+    </section>
+
+    <main class="menu-grid">
+        <div class="card">
+            <img src="poulet entier.png" alt="Poulet entier">
+            <h3>Poulet entier aux légumes</h3>
+            <p class="price">5000 KMF</p>
+            <button onclick="addToCart('Poulet entier aux légumes', 5000)" class="btn-add">Ajouter au panier</button>
+        </div>
+
+        <div class="card">
+            <img src="demi poulet.png" alt="Demi-poulet">
+            <h3>Demi-poulet avec frites</h3>
+            <p class="price">3000 KMF</p>
+            <button onclick="addToCart('Demi-poulet avec frites', 3000)" class="btn-add">Ajouter au panier</button>
+        </div>
+
+        <div class="card">
+            <img src="ailes.png" alt="Ailes de poulet">
+            <h3>Ailes de poulet grillées</h3>
+            <p class="price">1500 KMF</p>
+            <button onclick="addToCart('Ailes de poulet grillées', 1500)" class="btn-add">Ajouter au panier</button>
+        </div>
+    </main>
+
+    <div id="cart-modal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="toggleModal()">&times;</span>
+            <h2>Détails du panier 🛒</h2>
+            <div id="cart-details-list">
+                </div>
+            <hr>
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+                <button onclick="clearCart()" class="btn-clear">Vider tout</button>
+                <strong>Total: <span id="modal-total">0 KMF</span></strong>
+            </div>
+        </div>
+    </div>
+
+    <div id="cart-summary" class="cart-footer">
+        <div class="cart-info" onclick="toggleModal()" style="cursor: pointer; background: #fff5eb; padding: 5px; border-radius: 5px;">
+            <span id="items-count">0 plat(s) (Voir détail 🛒)</span>
+            <strong id="total-price">0 KMF</strong>
+        </div>
+        <div class="cart-actions">
+            <a href="tel:+2693999585" class="btn-call">📞 Appeler</a>
+            <button onclick="sendWhatsAppOrder()" class="btn-wa">🟢Commander WhatsApp</button>
+        </div>
+    </div>
+
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database-compat.js"></script>
+
+    <script>
+    // Ta configuration réelle
+    const firebaseConfig = {
+        apiKey: "AIzaSyBNPJ6ndCdvbjmrCCFx9_zba8hPkypGCRI",
+        authDomain: "monrestaurant-2bf8b.firebaseapp.com",
+        databaseURL: "https://monrestaurant-2bf8b-default-rtdb.europe-west1.firebasedatabase.app/", // Ajouté pour la Realtime Database
+        projectId: "monrestaurant-2bf8b",
+        storageBucket: "monrestaurant-2bf8b.firebasestorage.app",
+        messagingSenderId: "995575208643",
+        appId: "1:995575208643:web:ad70d316e75ee450276076",
+        measurementId: "G-FMZH4L9002"
+    };
+
+    // Initialisation de Firebase
+    firebase.initializeApp(firebaseConfig);
+    const database = firebase.database();
+    </script>
+
+    <script src="script.js"></script>
+</body>
+</html>
