@@ -96,25 +96,31 @@ function sendWhatsAppOrder() {
     
     message += `\n*Total à payer : ${total} KMF*`;
 
-    const phone = "2693330000"; 
+    // ... (haut de la fonction identique)
 
-    // 4. Enregistrement Firebase
+    const phone = "2693999585"; 
+    const whatsappUrl = `https://wa.me/${phone}?text=${encodeURIComponent(message)}`;
+
+    // Tentative d'enregistrement Firebase
     database.ref('orders/' + orderID).set({
         status: "Commande reçue ⏳",
         total: total,
         date: new Date().toLocaleString(),
-        items: cart // On enregistre aussi le détail du panier
+        items: cart
     })
     .then(() => {
-        alert("Commande enregistrée ! Notez votre code : " + orderID);
-        window.open(`https://wa.me/${phone}?text=${encodeURIComponent(message)}`, '_blank');
+        // SUR MOBILE : On informe l'utilisateur puis on redirige
+        alert("Commande enregistrée ! Code : " + orderID);
+        
+        // Utiliser location.href est souvent plus efficace sur mobile que window.open
+        window.location.href = whatsappUrl; 
     })
     .catch((error) => {
         console.error("Erreur Firebase :", error);
-        alert("Erreur de connexion Firebase. Vérifiez vos règles de sécurité.");
+        // Si Firebase échoue, on ouvre quand même WhatsApp pour ne pas perdre la vente
+        window.location.href = whatsappUrl;
     });
 }
-
 function checkStatus() {
     const code = document.getElementById("orderCode").value.toUpperCase().trim();
     const res = document.getElementById("statusResult");
@@ -133,4 +139,5 @@ function checkStatus() {
             res.innerHTML = "❌ Code introuvable. Vérifiez l'orthographe.";
         }
     });
+
 }
