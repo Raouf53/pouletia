@@ -1,7 +1,7 @@
 // Utilisation d'un objet {} pour mieux gérer les quantités par plat
 let cart = {}; 
 
-const texts = ["Bienvenue, Choisi ton plat", "Karibu, Chagua chakula chako", "Welcome, Choose your meal"];
+const texts = ["Karibu, Tsuguwa Ye plat Yaho","Bienvenue, Choisi ton plat", "Welcome, Choose your meal"];
 let i = 0;
 setInterval(() => {
     document.getElementById("welcome-text").textContent = texts[i];
@@ -141,3 +141,4 @@ function checkStatus() {
     });
 
 }
+
